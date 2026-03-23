@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        h1{
+            color: red;
+            font-size: 30px;
+            text-align: center;
+        }
+        .tit2{
+            color: blue;
+            font-size: 20px;
+            text-align: left;
+        }
+        .dllb{
+            color: green;
+            font-size: 50px;
+            text-align: center;
+        }
+        .temp-clod{
+            color: rgb(0, 195, 255);
+            font-size: 120px;
+            display: inline-block;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+        .temp-clod::before,
+        .temp-clod::after {
+            content: '❄';
+            position: absolute;
+            color: rgb(0, 195, 255);
+            font-size: 20px;
+            animation: snowfall 2s linear infinite;
+        }
+        .temp-clod::before {
+            top: -10px;
+            left: 10px;
+            animation-delay: 0s;
+        }
+        .temp-clod::after {
+            top: -5px;
+            right: 15px;
+            animation-delay: 1s;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes snowfall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(60px) rotate(360deg); opacity: 0; }
+        }
+        p{
+            color: rgb(255, 124, 2);
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>我是css标题</h1>
+    <h2 class="tit2">这也是一个css标题</h2>
+    <h2 class="dllb">迪丽<span class="temp-clod">冷Leng</span> ⑧</h2>
+    <p>我是css段落</p>
+</body>
+</html>

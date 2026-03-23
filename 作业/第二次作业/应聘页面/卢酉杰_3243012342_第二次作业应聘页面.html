@@ -26,26 +26,27 @@
             <option value="4000-5000">4000-5000元</option>
             <option value="5000-6000">5000-6000元</option>
         </select>
+
+        <input type="checkbox" name="housing" id="housing">
+        <label for="housing">要求提供过渡住房</label>
+        <br>
         <br>
         请选择应聘的行业：
         <select name="" id="">
             <option value="">请选择行业</option>
-            <option value="computer-software">计算机软件</option>
-            <option value="computer-software-frontend">--前端开发</option>
-            <option value="computer-software-backend">--后端开发</option>
-            <option value="computer-software-fullstack">--全栈开发</option>
-            <option value="computer-software-mobile">--移动开发</option>
-            <option value="computer-software-test">--测试工程师</option>
-            <option value="computer-hardware">计算机硬件</option>
-            <option value="computer-hardware-design">--硬件设计</option>
-            <option value="computer-hardware-maintenance">--硬件维护</option>
-            <option value="computer-hardware-manufacturing">--硬件制造</option>
+            <optgroup label="计算机软件">
+                <option value="computer-software-frontend">前端开发</option>
+                <option value="computer-software-backend">后端开发</option>
+                <option value="computer-software-fullstack">全栈开发</option>
+                <option value="computer-software-mobile">移动开发</option>
+                <option value="computer-software-test">测试工程师</option>
+            </optgroup>
+            <optgroup label="计算机硬件">
+                <option value="computer-hardware-design">硬件设计</option>
+                <option value="computer-hardware-maintenance">硬件维护</option>
+                <option value="computer-hardware-manufacturing">硬件制造</option>
+            </optgroup>
         </select>
-        <br>
-        <input type="radio" name="housing" id="housing">
-        <label for="housing">要求提供过渡住房</label>
-        <br>
-
     </form>
 </body>
 

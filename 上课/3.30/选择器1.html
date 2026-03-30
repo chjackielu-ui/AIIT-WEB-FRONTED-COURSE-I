@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* 通配符选择器 *{}*/
+        * {
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        /* 块级标签选择器 标签{}*/
+        div {
+            color: red;
+            background-color: rgb(9, 255, 0);
+            margin: 20px;
+            width: 600px;
+            height: 120px;
+        }
+
+        div {
+            background-color: rgb(255, 255, 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50px;
+        }
+
+        span {
+            color: rgb(19, 255, 188);
+            background-color: rgb(255, 0, 0);
+            /* margin: 20px;
+            width: 200px;
+            height: 200px; */
+        }
+
+        /* 类选择器 .类名{}*/
+        .mydiv {
+            color: rgb(255, 128, 0);
+            background-color: rgba(0, 221, 255, 0.449);
+            font-size: 20px;
+        }
+
+        /* id选择器 #id名{}*/
+        #mydiv{
+            color: rgb(255, 128, 0);
+            background-color: rgba(162, 255, 0, 0.449);
+            font-size: 20px;
+            width: 200px;
+            height: 200px;
+            border-radius: 500000px;
+            font-weight: bold;
+        }
+        /* id选择器 #id名{}*/
+        #left{
+            background-color: rgba(255, 94, 0, 0.455);
+            width: 500px;
+            height: 300px;
+        }
+        /* id选择器 #id名{}*/
+        #center{
+            background-color: rgba(255, 94, 0, 0.455);
+            width: 200px;
+            height: 200px;
+        }
+        /* id选择器 #id名{}*/
+        #right{
+            background-color: rgba(255,94,0,0.455);
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mydiv">我是块级标签div/h1-h6/p</div>
+    <div>我是块级标签</div>
+    <div class="mydiv" id="mydiv">我是块级标签3</div>
+    <span>我是行内标签</span>
+    <span class="mydiv">我是行内标签 &nbsp; span/img/a/input</span>
+    <span>我是行内标签</span>
+    <div></div>
+    <span id="left">左</span>
+    <span id="center">中</span>
+    <span id="right">右</span>
+</body>
+
+</html>

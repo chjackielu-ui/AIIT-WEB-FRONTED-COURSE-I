@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* 第一种清除浮动：overflow: hidden; */
+        /* overflow: hidden; */
+        .father {
+            width: 500px;
+            /* height: 50px; */
+            /* background-color: rgb(28, 169, 66); */
+            border: 5px solid rgb(169, 28, 28);
+            /* overflow: hidden; */
+        }
+
+        /* 第二种清除浮动：clear: both; */
+        /* clear: both; */
+        .clear {
+            clear: both;
+        }
+        /* 第三种清除浮动：伪对象 */
+        /* .father::after {
+            display: block;
+            content: "";
+            clear: both;
+            height: 0;
+            visibility: hidden;
+        } */
+        .son {
+            width: 100px;
+            height: 100px;
+            background-color: rgb(28, 169, 66);
+            margin: 10px;
+            float: left;
+        }
+
+        #fatherson {
+            font-size: 20px;
+            font-style: normal;
+            font-family: "宋体";
+            color: rgb(28, 169, 66);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="father">
+        <div class="son">1</div>
+        <div class="son">2</div>
+        <div class="son">3</div>
+        <p id="fatherson">fatherson</p>
+        <div class="clear"></div>
+
+    </div>
+    <p>hahahaha</p>
+    <p>哈哈哈哈哈</p>
+    <p>hahahha</p>
+</body>
+
+</html>

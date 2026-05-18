@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 数组的常用方法
+        let array1 = [2,5,2,"hello",false];//数组1
+        console.log(array1);
+        let array2 = [5,6,2,1];//数组2
+        let Array1= array1.concat(array2);//合并数组
+        console.log(Array1);//合并后的数组,不会改变原数组,返回一个新的数组
+        console.log(array1.concat(array2));//合并后的数组
+        console.log(array1.join("@"));//将数组转换为字符串,并用@分隔
+        console.log("array1:"+array1);
+        console.log("pop:"+array1.pop());//删除数组最后一个元素,并返回该元素
+        console.log("array1:"+array1);
+        console.log("push:"+array2.push("哈哈"));// 在数组末尾添加一个元素,并返回新的数组长度
+        console.log("array2:"+array2);
+        console.log(array2);
+        console.log("_______array2__________");
+        console.log(array2.reverse());//将数组元素反转,并返回该数组
+        console.log(array2.sort());//将数组元素排序,并返回该数组
+        let stringArray = array2.toString();//将数组转换为字符串,并返回该字符串
+        console.log(stringArray);
+
+    </script>
+</body>
+</html>

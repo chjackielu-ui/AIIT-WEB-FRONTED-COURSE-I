@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        button {
+            width: 200px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="fn1()">点击我使用document.write输出</button>
+    <br>
+    <button onclick="fn()">点击我使用console.log输出</button>
+    <br>
+    <script>
+        // var tag_sum_num = 100;
+        // for (var i = 1; i <= tag_sum_num; i++) {
+        //     tag_sum_num += i;
+        // }
+        // console.log(tag_sum_num);
+        for (var i = 1; i <= 10; i++) {
+            document.write(i);
+            for (var j = 1; j <= i; j++) {
+                document.write(j);
+            }
+            document.write("<br>");
+        }
+
+        for (var i = 0; i < 10; i++) {
+            console.log("*");
+        }
+        var age = 18;
+        console.log(age);
+        console.log(typeof (age));
+        var newAge = parseInt(age);
+        console.log(newAge);
+        console.log(typeof (newAge));
+        console.log(isNaN("你好"))
+        console.log(isNaN(18))
+        function fn() {
+            var num = 8;
+            for (var i = 1; i <= num; i++) {
+                var str = "";
+                for (var j = 1; j <= i; j++) {
+                    str += " 迪丽热巴 ";
+                }
+                console.log(str);
+            }
+        }
+        fn();
+        function fn1() {
+            var num = 8;
+            for (var i = 1; i <= num; i++) {
+                var str = "";
+                for (var j = 1; j <= i; j++) {
+                    str += " 迪丽热巴 ";
+                }
+                document.write(str);
+                document.write("<br>");
+            }
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var str = "helloJS";
+        var str2 = "world";
+        var str3 = "哥，们，生，意，行，啊"
+        console.log(str.charAt(3));//获取字符串的第4个字符,索引从0开始,返回第4个字符,即l字符
+        console.log(str.concat(str2));//合并字符串,返回一个新的字符串
+        console.log(str.indexOf("1"));//返回字符串中第一个字符1的索引,从0开始,如果不存在则返回-1
+        console.log(str.lastIndexOf("1"));//返回字符串中最后一个字符1的索引,从0开始,如果不存在则返回-1
+        console.log(str3.split(","));//将字符串转换为数组,并返回该数组
+        console.log(str.substr(1,2));//返回字符串的第2个字符,索引从0开始,返回第2个字符,即l字符
+        console.log(str.substring(2,5));//返回字符串的第2个字符,索引从0开始,返回第2个字符,即l字符
+        console.log(str.toLowerCase());//将字符串转换为小写,返回一个新的字符串
+        console.log(str.toUpperCase());//将字符串转换为大写,返回一个新的字符串
+        console.log(str.replace("o","x"));//将字符串中的o字符替换为x字符,返回一个新的字符串
+    </script>
+</body>
+
+</html>

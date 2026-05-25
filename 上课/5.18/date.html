@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //当前的时间对象
+        let date = new Date();              // 创建当前日期时间对象
+        console.log(date);                  // 打印完整的Date对象
+
+        var year = date.getFullYear();      // 获取年份（四位数字）
+        var month = date.getMonth();        // 获取月份（0-11，0表示一月）
+        var day = date.getDate();           // 获取日期（1-31）
+        var week = date.getDay();
+
+        var hour = date.getHours();         // 获取小时（0-23）
+        var minute = date.getMinutes();     // 获取分钟（0-59）
+        var second = date.getSeconds();     // 获取秒数（0-59）
+
+        console.log(year);                  // 打印年份
+        console.log(month);                 // 打印月份
+        console.log(day);                   // 打印日期
+        console.log(week);
+
+        console.log(year+"年"+month+"月"+day+"日"+week+"周"+hour+"时"+minute+"分"+second+"秒");  // 打印格式化的时间字符串
+        let oldDate = new Date("October/13/1975 11:13:00");
+        console.log(oldDate.getFullYear);
+    </script>
+</body>
+</html>

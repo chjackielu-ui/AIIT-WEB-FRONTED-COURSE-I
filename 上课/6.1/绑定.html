@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 方式1：行内式 -->
+    <h1 id = "today" onclick = "fn()">今天周一</h1>
+    <!-- 方式2：动态绑定 -->
+    <h2 id = "two">第二种绑定</h2>
+    <!-- 方式3：事件监听器（推荐） -->
+    <h3 id = "three">第三种方式：事件监听器</h3>
+    <script>
+        var today = document.getElementById("today");
+
+        function fn()
+        {
+            today.innerHTML = "今天天气不错！";
+            today.style.color = "red";
+        }
+
+        let two = document.getElementById("two");
+        two.onclick = function()
+        {
+            two.innerHTML = "今天天气不错！";
+            two.style.color = "yellow";
+            console.log("点击了第二种绑定");
+        }
+
+        var three = document.getElementById("three");
+        three.addEventListener("click", function()
+        {
+           console.log("我被监听了");
+           three.style.color = "red";
+        });
+        three.addEventListener("click", function()
+        {
+            console.log("我也被监听了！");
+            three.style.color = "green";
+        });
+    </script>
+
+</body>
+</html>

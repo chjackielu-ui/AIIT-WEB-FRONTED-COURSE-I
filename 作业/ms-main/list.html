@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美食图鉴 — 舌尖BOSS</title>
+    <link rel="stylesheet" href="common.css?v=2.1">
+    <style>
+        /* 页面头部 */
+        .page-header {
+            background: linear-gradient(180deg, #FFF5F5 0%, #FFFDFB 100%);
+            padding: 40px 0 16px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            opacity: 0.85;
+        }
+
+        /* 统一粘性控制面板 (毛玻璃+极简紧凑) */
+        .control-panel-sticky {
+            position: sticky;
+            top: 57px;
+            z-index: 150;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+            padding: 14px 0 12px;
+            transition: all 0.3s ease;
+        }
+
+        /* 极简搜索区 */
+        .search-section {
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 44px 10px 18px;
+            border: 1.5px solid rgba(0, 0, 0, 0.08);
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+            font-size: 0.95rem; /* 调大输入字体 */
+            color: var(--text-primary);
+            transition: all 0.25s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.08);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        /* 精致结果数量徽章 */
+        .result-summary {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem; /* 调大提示文本字体 */
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .result-summary strong {
+            color: var(--accent-primary);
+            background-color: rgba(230, 57, 70, 0.08);
+            padding: 2px 10px; /* 增大数字胶囊 */
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1rem; /* 调大数字字体 */
+        }
+
+        /* 筛选区 */
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.05);
+            padding-top: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        /* 优雅分类标签 */
+        .filter-label {
+            font-size: 0.88rem; /* 调大分类标签字体 */
+            font-weight: 700;
+            color: var(--text-secondary);
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 2px;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* 极简胶囊按钮 */
+        .filter-btn {
+            padding: 5px 15px; /* 增大按钮内边距 */
+            border: none;
+            background-color: rgba(0, 0, 0, 0.03);
+            color: var(--text-secondary);
+            border-radius: 20px;
+            font-size: 0.9rem; /* 调大按钮字体 */
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .filter-btn:hover:not(:disabled) {
+            background-color: rgba(0, 0, 0, 0.06);
+            color: var(--text-primary);
+        }
+
+        /* 激活状态 */
+        .filter-btn.active {
+            background: linear-gradient(135deg, #FF5A5A 0%, #E63946 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(230, 57, 70, 0.2);
+            font-weight: 600;
+        }
+
+        /* 禁用状态 */
+        .filter-btn.disabled {
+            opacity: 0.3;
+            background-color: transparent;
+            border: 1px dashed rgba(0, 0, 0, 0.1);
+            cursor: not-allowed;
+        }
+
+        /* 省份筛选二级菜单 */
+        .province-filters {
+            display: none;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.02);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            margin-top: 4px;
+        }
+
+        .province-filters.show {
+            display: block;
+            animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .province-inner-label {
+            font-size: 0.8rem; /* 调大二级省份提示字 */
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 优化后的卡片容器：紧凑顶部间距 */
+        .food-section {
+            padding: 20px 0 40px;
+        }
+
+        /* 美食卡片网格 */
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            padding: 0;
+        }
+
+        .food-card {
+            background-color: var(--bg-primary);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .food-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.05);
+            border-color: rgba(230, 57, 70, 0.15);
+        }
+
+        .food-card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: var(--bg-tertiary);
+            display: block;
+        }
+
+        .food-card-icon-fallback {
+            width: 100%;
+            height: 200px;
+            background-color: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+        }
+
+        .food-card-body {
+            padding: 20px;
+        }
+
+        .food-card-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .food-card-city {
+            font-size: 0.88rem;
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+        }
+
+        .food-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .food-card-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .no-result {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-result-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 1024px) {
+            .food-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .control-panel-sticky {
+                top: 53px;
+                padding: 12px 0 10px;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .filter-label {
+                margin-top: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .food-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.6rem;
+            }
+
+            .food-card-img,
+            .food-card-icon-fallback {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <header class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">
+                      <img src="images/logo.png" alt="舌尖BOSS" class="logo-icon">
+                <span>舌尖BOSS</span>
+            </a>
+            <div class="nav-center">
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">首页</a>
+                    <a href="map.html" class="nav-link">美食地图</a>
+                    <a href="list.html" class="nav-link active">美食图鉴</a>
+                    <a href="challenge.html" class="nav-link">挑战BOSS</a>
+                </nav>
+            </div>
+            <div class="nav-search-container">
+                <button class="nav-search-toggle" id="navSearchToggle" title="搜索">🔍</button>
+                <div class="nav-search-box" id="navSearchBox">
+                    <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜索美食...">
+                    <button class="nav-search-submit" id="navSearchSubmit">→</button>
+                </div>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </header>
+
+    <!-- 页面头部 -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">美食图鉴</h1>
+            <p class="page-subtitle">探索全国各地的特色美食</p>
+        </div>
+    </section>
+
+    <!-- 统一控制面板 -->
+    <div class="control-panel-sticky">
+        <!-- 搜索区 -->
+        <section class="search-section">
+            <div class="container">
+                <div class="search-box">
+                    <input
+                        type="text"
+                        class="search-input"
+                        id="searchInput"
+                        placeholder="搜索美食名称、城市、省份、口味...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <!-- 结果提示 -->
+                <div class="result-summary" id="resultInfo">
+                    已为您筛选出 <strong id="resultCount">15</strong> 道特色美食
+                </div>
+            </div>
+        </section>
+
+        <!-- 筛选区 -->
+        <section class="filter-section">
+            <div class="container">
+                <!-- 地区筛选 -->
+                <div class="filter-group" style="margin-bottom: 6px;">
+                    <span class="filter-label">地区</span>
+                    <div class="filter-content">
+                        <div class="filter-buttons" id="regionFilters">
+                            <button class="filter-btn active" data-region="全部">全部</button>
+                            <button class="filter-btn" data-region="华北">华北</button>
+                            <button class="filter-btn" data-region="东北">东北</button>
+                            <button class="filter-btn" data-region="华东">华东</button>
+                            <button class="filter-btn" data-region="华南">华南</button>
+                            <button class="filter-btn" data-region="华中">华中</button>
+                            <button class="filter-btn" data-region="西南">西南</button>
+                            <button class="filter-btn" data-region="西北">西北</button>
+                        </div>
+
+                        <!-- 省份筛选（动态折叠卡片） -->
+                        <div class="province-filters" id="provinceFilters">
+                            <span class="province-inner-label">按省份细分：</span>
+                            <div class="filter-buttons" id="provinceButtons">
+                                <!-- 动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 口味筛选 -->
+                <div class="filter-group">
+                    <span class="filter-label">口味</span>
+                    <div class="filter-content">
+                        <div class="filter-buttons" id="typeFilters">
+                            <button class="filter-btn active" data-type="全部">全部</button>
+                            <button class="filter-btn" data-type="麻辣系">麻辣系</button>
+                            <button class="filter-btn" data-type="精致系">精致系</button>
+                            <button class="filter-btn" data-type="经典系">经典系</button>
+                            <button class="filter-btn" data-type="面食系">面食系</button>
+                            <button class="filter-btn" data-type="硬核系">硬核系</button>
+                            <button class="filter-btn" data-type="重口系">重口系</button>
+                            <button class="filter-btn" data-type="酸甜系">酸甜系</button>
+                            <button class="filter-btn" data-type="鲜香系">鲜香系</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 美食卡片网格区域 -->
+    <section class="food-section">
+        <div class="container">
+            <div class="food-grid" id="foodGrid">
+                <!-- 动态生成 -->
+            </div>
+            <div class="no-result" id="noResult" style="display: none;">
+                <div class="no-result-icon">🔍</div>
+                <p>该筛选条件下暂无美食，请尝试其他组合</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-brand">
+                <span class="logo-icon">🍜</span>
+                <span>舌尖BOSS</span>
+            </div>
+            <p class="footer-desc">全国美食探索图鉴</p>
+            <p class="footer-tech">Copyright By 卢酉杰 软件2403 3243012342</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script>
+        let currentRegion = '全部';
+        let currentProvince = '全部';
+        let currentType = '全部';
+        let searchKeyword = '';
+
+        const regionProvinces = {
+            '华北': ['北京市', '天津市', '河北省', '山西省', '内蒙古自治区'],
+            '东北': ['辽宁省', '吉林省', '黑龙江省'],
+            '华东': ['上海市', '江苏省', '浙江省', '安徽省', '福建省', '江西省', '山东省', '台湾省'],
+            '华南': ['广东省', '广西壮族自治区', '海南省', '香港特别行政区', '澳门特别行政区'],
+            '华中': ['河南省', '湖北省', '湖南省'],
+            '西南': ['重庆市', '四川省', '贵州省', '云南省', '西藏自治区'],
+            '西北': ['陕西省', '甘肃省', '青海省', '宁夏回族自治区', '新疆维吾尔自治区']
+        };
+
+        function renderFoodCards() {
+            const grid = document.getElementById('foodGrid');
+            const noResult = document.getElementById('noResult');
+            const resultCount = document.getElementById('resultCount');
+
+            let filtered = foodBosses.filter(food => {
+                if (searchKeyword) {
+                    const keyword = searchKeyword.toLowerCase();
+                    const matchSearch = food.name.toLowerCase().includes(keyword) ||
+                                       food.city.toLowerCase().includes(keyword) ||
+                                       (food.province && food.province.toLowerCase().includes(keyword)) ||
+                                       food.region.toLowerCase().includes(keyword) ||
+                                       food.type.toLowerCase().includes(keyword) ||
+                                       food.taste.some(t => t.toLowerCase().includes(keyword)) ||
+                                       food.desc.toLowerCase().includes(keyword);
+                    if (!matchSearch) return false;
+                }
+
+                const matchRegion = (currentRegion === '全部' || food.region === currentRegion);
+                if (!matchRegion) return false;
+
+                const matchProvince = (currentProvince === '全部' || food.province === currentProvince);
+                if (!matchProvince) return false;
+
+                const matchType = (currentType === '全部' || food.type === currentType);
+                return matchType;
+            });
+
+            resultCount.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noResult.style.display = 'block';
+                return;
+            }
+
+            noResult.style.display = 'none';
+
+            let html = '';
+            filtered.forEach(food => {
+                const tags = food.taste.map(t => `<span class="tag tag-primary">${t}</span>`).join('');
+                const imgHtml = food.img
+                    ? `<img class="food-card-img" src="${food.img}" alt="${food.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                       <div class="food-card-icon-fallback" style="display:none;">${food.icon}</div>`
+                    : `<div class="food-card-icon-fallback">${food.icon}</div>`;
+
+                html += `
+                    <div class="food-card" onclick="window.location.href='detail.html?id=${food.id}'">
+                        ${imgHtml}
+                        <div class="food-card-body">
+                            <h3 class="food-card-name">${food.name}</h3>
+                            <p class="food-card-city">${food.city} · ${food.province || food.region}</p>
+                            <div class="food-card-tags">${tags}</div>
+                            <p class="food-card-desc">${food.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function updateProvinceFilters() {
+            const provinceFilters = document.getElementById('provinceFilters');
+            const provinceButtons = document.getElementById('provinceButtons');
+
+            if (currentRegion === '全部') {
+                provinceFilters.classList.remove('show');
+                currentProvince = '全部';
+                return;
+            }
+
+            const provinces = regionProvinces[currentRegion] || [];
+
+            if (provinces.length === 0) {
+                provinceFilters.classList.remove('show');
+                currentProvince = '全部';
+                return;
+            }
+
+            let html = '<button class="filter-btn active" data-province="全部">全部</button>';
+            provinces.forEach(province => {
+                const count = foodBosses.filter(f => f.province === province).length;
+                const shortName = province.replace('省', '').replace('市', '').replace('自治区', '').replace('特别行政区', '').replace('壮族', '').replace('维吾尔', '').replace('回族', '');
+                const disabledClass = count === 0 ? ' disabled' : '';
+                html += `<button class="filter-btn${disabledClass}" data-province="${province}" ${count === 0 ? 'disabled' : ''}>${shortName} (${count})</button>`;
+            });
+
+            provinceButtons.innerHTML = html;
+            provinceFilters.classList.add('show');
+            currentProvince = '全部';
+
+            document.querySelectorAll('#provinceButtons .filter-btn:not(.disabled)').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#provinceButtons .filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentProvince = this.getAttribute('data-province');
+                    renderFoodCards();
+                });
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            searchKeyword = this.value.trim();
+            renderFoodCards();
+        });
+
+        document.querySelectorAll('#regionFilters .filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#regionFilters .filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentRegion = this.getAttribute('data-region');
+                updateProvinceFilters();
+                renderFoodCards();
+            });
+        });
+
+        document.querySelectorAll('#typeFilters .filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#typeFilters .filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentType = this.getAttribute('data-type');
+                renderFoodCards();
+            });
+        });
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('mobile-open');
+        });
+
+        const navSearchToggle = document.getElementById('navSearchToggle');
+        const navSearchBox = document.getElementById('navSearchBox');
+        const navSearchInput = document.getElementById('navSearchInput');
+        const navSearchSubmit = document.getElementById('navSearchSubmit');
+
+        navSearchToggle.addEventListener('click', () => {
+            navSearchBox.classList.toggle('active');
+            if (navSearchBox.classList.contains('active')) {
+                navSearchInput.focus();
+            }
+        });
+
+        function performNavSearch() {
+            const keyword = navSearchInput.value.trim();
+            if (keyword) {
+                const searchUrl = `https://www.baidu.com/s?wd=${encodeURIComponent(keyword + ' 美食')}`;
+                window.open(searchUrl, '_blank');
+                navSearchInput.value = '';
+            }
+        }
+
+        navSearchSubmit.addEventListener('click', performNavSearch);
+        navSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performNavSearch();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!navSearchToggle.contains(e.target) && !navSearchBox.contains(e.target)) {
+                navSearchBox.classList.remove('active');
+            }
+        });
+
+        renderFoodCards();
+    </script>
+</body>
+</html>

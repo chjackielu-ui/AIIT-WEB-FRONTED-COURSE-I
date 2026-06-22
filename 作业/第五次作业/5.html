@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>留言板</title>
+    <style>
+        #box {
+            width: 400px;
+            background-color: #F2E3D3;
+            border-radius: 25px;
+            box-shadow: 0 0 15px 5px #003370;
+            text-align: center;
+            padding: 20px 0;
+            margin: 50px auto;
+        }
+
+        h3 {
+            margin: 0 0 10px 0;
+        }
+
+        textarea {
+            width: 280px;
+            height: 60px;
+        }
+
+        input {
+            width: 120px;
+            height: 20px;
+            border-radius: 20px;
+        }
+
+        #show {
+            width: 280px;
+            height: 100px;
+            border: 1px solid gray;
+            margin: 5px auto;
+            text-align: left;
+            overflow: scroll;
+            background-color: white;
+        }
+
+        .one {
+            margin: 3px;
+        }
+
+        .del {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        <h3>留言板</h3>
+        <form>
+            <textarea id="txt" placeholder="请填写你的宝贵意见"></textarea><br>
+            <input type="button" value="发表留言" id="btn1">
+            <input type="button" value="留言统计" id="btn2">
+        </form>
+        <div id="show"></div>
+    </div>
+
+    <script>
+        var btn1 = document.getElementById("btn1");
+        var btn2 = document.getElementById("btn2");
+        var txt = document.getElementById("txt");
+        var show = document.getElementById("show");
+        var num = 0;
+
+        btn1.onclick = function () {
+            if (txt.value == "") {
+                return;
+            }
+
+            var mydate = new Date();
+            var time = mydate.getFullYear() + "/" + (mydate.getMonth() + 1) + "/" + mydate.getDate() + " " + mydate.getHours() + ":" + mydate.getMinutes() + ":" + mydate.getSeconds();
+
+            var div = document.createElement("div");
+            div.className = "one";
+
+            var span1 = document.createElement("span");
+            span1.innerText = time + " " + txt.value + " ";
+
+            var span2 = document.createElement("span");
+            span2.innerText = "X";
+            span2.className = "del";
+
+            span2.onclick = function () {
+                show.removeChild(div);
+                num--;
+            }
+
+            div.appendChild(span1);
+            div.appendChild(span2);
+            show.appendChild(div);
+
+            txt.value = "";
+            num++;
+        }
+
+        btn2.onclick = function () {
+            alert("一共发布了" + num + "条留言。");
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>随机产生20个4位整数并从小到大进行排序</title>
+    <style>
+        #box {
+            width: 720px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 1px solid #555;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        #txt {
+            width: 600px;
+            height: 250px;
+            font-size: 18px;
+        }
+
+        input {
+            border-radius: 10px;
+            border-width: 2px 5px;
+            padding: 5px 8px;
+            font-size: 18px;
+            margin: 25px 10px 0 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        <h2>随机产生20个4位整数并从小到大进行排序</h2>
+        <form>
+            <textarea id="txt"></textarea><br>
+            <input type="button" value="随机产生20个整数" id="btn1">
+            <input type="button" value="找出能被5整除的整数" id="btn2">
+            <input type="button" value="重置" id="btn3">
+        </form>
+    </div>
+
+    <script>
+        var btn1 = document.getElementById("btn1");
+        var btn2 = document.getElementById("btn2");
+        var btn3 = document.getElementById("btn3");
+        var txt = document.getElementById("txt");
+        var arr = [];
+
+        btn1.onclick = function () {
+            arr = [];
+
+            for (var i = 0; i < 20; i++) {
+                var num = Math.floor(Math.random() * 9000) + 1000;
+                arr.push(num);
+            }
+
+            var arr2 = arr.slice();
+            arr2.sort(function (a, b) {
+                return a - b;
+            });
+
+            txt.value = "随机产生20个4位整数，分别如下：\n";
+            txt.value += arr.join(", ") + "\n";
+            txt.value += "从小到大排序后结果为：\n";
+            txt.value += arr2.join(", ");
+        }
+
+        btn2.onclick = function () {
+            var arr3 = [];
+
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] % 5 == 0) {
+                    arr3.push(arr[i]);
+                }
+            }
+
+            txt.value += "\n能被5整除的整数有：\n";
+            txt.value += arr3.join(", ");
+        }
+
+        btn3.onclick = function () {
+            txt.value = "";
+            arr = [];
+        }
+    </script>
+</body>
+
+</html>

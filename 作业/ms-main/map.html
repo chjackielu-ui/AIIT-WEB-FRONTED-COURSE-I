@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国美食地图 — 舌尖BOSS</title>
+    <link rel="stylesheet" href="common.css?v=2.1">
+    <style>
+        :root {
+            --map-ocean: #F0F4F8; /* 柔和的海水背景 */
+            --map-border: #D1D5DB;
+            --primary-red: #E63946;
+            --primary-red-hover: #D90429;
+            --text-dark: #333333;
+            --text-muted: #6B7280;
+        }
+
+        body {
+            background-color: #FAFAFA;
+        }
+
+        /* 页面头部优化 */
+        .page-header {
+            background: linear-gradient(135deg, #FFF0F0 0%, #FFF9F2 50%, #F5F9FF 100%);
+            padding: 80px 0 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .page-header::before {
+            content: "🍜 🥟 🥘 🍲 🍚";
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 4rem;
+            opacity: 0.05;
+            letter-spacing: 2rem;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .page-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .page-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .map-section {
+            padding: 50px 0 80px;
+        }
+
+        .map-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* 顶部提示胶囊 */
+        .map-intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .map-intro-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #FFE4E6 0%, #FECACA 100%);
+            color: var(--primary-red-hover);
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.15);
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* 地图主容器 - 增加海洋底色和立体感 */
+        .map-container {
+            background: var(--map-ocean);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 
+                inset 0 0 80px rgba(255,255,255,0.7),
+                0 20px 50px rgba(0, 0, 0, 0.08),
+                0 0 0 4px #FFFFFF;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .china-map {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15)); /* 给地图块增加立体厚重感 */
+        }
+
+        /* --- 省份 SVG 渲染样式 --- */
+        .map-province-bg {
+            fill: #FFFFFF;
+            stroke: #E2E8F0;
+            stroke-width: 1;
+            stroke-linejoin: round;
+        }
+
+        .map-province {
+            stroke: #FFFFFF;
+            stroke-width: 1.5;
+            stroke-linejoin: round;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* 果冻反弹动画 */
+        }
+
+        .map-province:hover {
+            fill-opacity: 0.85;
+            stroke: #FFB703;
+            stroke-width: 2.5;
+            filter: brightness(1.05) drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        /* 安徽省 - 焦点高亮 */
+        .map-province.anhui-highlight {
+            fill: url(#anhuiGradient) !important;
+            stroke: #FFD166;
+            stroke-width: 2.5;
+            animation: anhuiPulse 3s infinite alternate;
+        }
+
+        .map-province.anhui-highlight:hover {
+            stroke: #FFFFFF;
+            stroke-width: 3.5;
+            filter: brightness(1.1) drop-shadow(0 0 15px rgba(230, 57, 70, 0.6));
+        }
+
+        @keyframes anhuiPulse {
+            0% { filter: drop-shadow(0 0 5px rgba(230, 57, 70, 0.3)); }
+            100% { filter: drop-shadow(0 0 18px rgba(230, 57, 70, 0.7)); }
+        }
+
+        /* --- 字体标签优化 --- */
+        .map-label {
+            fill: #4A2311; /* 暖深棕色，更具美食感 */
+            font-size: 11px;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-weight: 600;
+            text-anchor: middle;
+            dominant-baseline: central; /* 保证真正的垂直居中 */
+            pointer-events: none; /* 让点击事件穿透到省份path上 */
+            
+            /* 文字描边，让文字在任何颜色背景上都清晰 */
+            paint-order: stroke fill;
+            stroke: rgba(255, 255, 255, 0.85);
+            stroke-width: 2.5px;
+            stroke-linejoin: round;
+            transition: all 0.3s ease;
+        }
+
+        /* 标签悬浮联动放大 */
+        .map-label.hovered {
+            font-size: 14px;
+            fill: var(--primary-red);
+            font-weight: 800;
+            stroke: #FFFFFF;
+            stroke-width: 3px;
+        }
+
+        /* 安徽标签专属样式 */
+        .map-label.anhui-label {
+            fill: #FFFFFF;
+            font-weight: 900;
+            font-size: 14px;
+            stroke: #9B2226;
+            stroke-width: 3px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .map-label.anhui-label.hovered {
+            font-size: 16px;
+        }
+
+        /* --- 悬浮提示框 (Tooltip) --- */
+        .map-tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #FEF08A;
+            color: var(--text-dark);
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -150%) scale(0.9);
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 1000;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .map-tooltip::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px 8px 0;
+            border-style: solid;
+            border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
+        }
+
+        .map-tooltip.show {
+            opacity: 1;
+            transform: translate(-50%, -120%) scale(1);
+        }
+
+        .tooltip-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #B45309;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tooltip-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* 统计卡片 - 满宽三列均衡布局 */
+        .map-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 24px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* 水平居中 */
+            gap: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-icon {
+            font-size: 2.2rem;
+            background: #FEF3C7;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            flex-shrink: 0;
+        }
+
+        .stat-info h4 {
+            margin: 0 0 2px 0;
+            font-size: 2rem;
+            color: #D97706;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .stat-info p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .map-container { padding: 15px; border-radius: 16px; }
+            .map-stats { grid-template-columns: 1fr; gap: 16px; margin-top: 24px;}
+            .stat-card { padding: 20px; justify-content: flex-start; } /* 移动端靠左对齐更美观 */
+            .map-label { font-size: 8px; stroke-width: 1.5px; }
+            .map-label.anhui-label { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <header class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">
+                      <img src="images/logo.png" alt="舌尖BOSS" class="logo-icon">
+                <span>舌尖BOSS</span>
+            </a>
+            <div class="nav-center">
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">首页</a>
+                    <a href="map.html" class="nav-link active">美食地图</a>
+                    <a href="list.html" class="nav-link">美食图鉴</a>
+                    <a href="challenge.html" class="nav-link">挑战BOSS</a>
+                </nav>
+            </div>
+            <div class="nav-search-container">
+                <button class="nav-search-toggle" id="navSearchToggle" title="搜索">🔍</button>
+                <div class="nav-search-box" id="navSearchBox">
+                    <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜索美食...">
+                    <button class="nav-search-submit" id="navSearchSubmit">→</button>
+                </div>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1 class="page-title">🗺️ 全国美食寻宝图</h1>
+        <p class="page-subtitle">点击行政区，解锁属于你的地方专属美味</p>
+    </section>
+
+    <section class="map-section">
+        <div class="container">
+            <div class="map-wrapper">
+                
+                <div class="map-intro">
+                    <div class="map-intro-badge">✨ 核心区域：安徽特色徽菜</div>
+                </div>
+
+                <!-- 中国地图容器 -->
+                <div class="map-container" id="mapContainer">
+                    <div style="text-align: center; padding: 100px 20px; color: var(--text-muted);">
+                        <div style="font-size: 3rem; margin-bottom: 16px; animation: bounce 1s infinite alternate;">🍳</div>
+                        <div style="font-size: 1.1rem;">正在生火起锅，加载地图中...</div>
+                    </div>
+
+                    <!-- 悬浮提示框 -->
+                    <div class="map-tooltip" id="mapTooltip">
+                        <div class="tooltip-title">
+                            <span id="tooltipIcon">📍</span>
+                            <span id="tooltipProvince">省份名称</span>
+                        </div>
+                        <div class="tooltip-desc" id="tooltipCount">收录美食：0道</div>
+                    </div>
+                </div>
+
+                <!-- 底部满宽统计卡片 -->
+                <div class="map-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">🇨🇳</div>
+                        <div class="stat-info">
+                            <h4>34</h4>
+                            <p>省级行政区</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🍲</div>
+                        <div class="stat-info">
+                            <h4 id="totalFoods">15</h4>
+                            <p>总收录美食</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✨</div>
+                        <div class="stat-info">
+                            <h4>10</h4>
+                            <p>安徽特色徽菜</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script src="china_geo_data.js"></script>
+    <script src="data.js"></script>
+    
+    <script>
+        // 容错处理：确保 data.js 数据不存在时页面不崩溃
+        const foodData = typeof foodBosses !== 'undefined' ? foodBosses : [];
+        const customColors = typeof provinceColors !== 'undefined' ? provinceColors : {};
+
+        // 备用美食系暖色色板
+        const warmPalette = ['#FFE4B5', '#FFDEAD', '#FFDAB9', '#FFE4C4', '#FDF5E6', '#FFF8DC', '#FAEBD7'];
+
+        // 获取省份美食数量
+        function getProvinceFoodCount(province) {
+            return foodData.filter(f => f.province === province).length;
+        }
+
+        // 初始化入口
+        function initMap() {
+            if (typeof CHINA_GEO === 'undefined') {
+                document.getElementById('mapContainer').innerHTML = 
+                    '<div style="text-align: center; padding: 100px; color: red;"><h3>⚠️ 地图数据加载失败</h3><p>请确保 china_geo_data.js 路径正确</p></div>';
+                return;
+            }
+            buildMap(CHINA_GEO, document.getElementById('mapContainer'));
+        }
+
+        // 渲染地图
+        function buildMap(geoData, container) {
+            const MAP_W = 1000, MAP_H = 750;
+            const MAP_LNG_MIN = 73, MAP_LNG_MAX = 136;
+            const MAP_LAT_MIN = 17, MAP_LAT_MAX = 54;
+
+            function project(lng, lat) {
+                const x = ((lng - MAP_LNG_MIN) / (MAP_LNG_MAX - MAP_LNG_MIN)) * MAP_W;
+                const y = ((MAP_LAT_MAX - lat) / (MAP_LAT_MAX - MAP_LAT_MIN)) * MAP_H;
+                return [x.toFixed(2), y.toFixed(2)];
+            }
+
+            function geoToPath(geometry) {
+                const parts = [];
+                const processRing = ring => {
+                    let d = '';
+                    ring.forEach((point, i) => {
+                        const [x, y] = project(point[0], point[1]);
+                        d += (i === 0 ? 'M' : 'L') + x + ',' + y;
+                    });
+                    return d + 'Z';
+                };
+                
+                if (geometry.type === 'MultiPolygon') {
+                    geometry.coordinates.forEach(polygon => {
+                        polygon.forEach(ring => parts.push(processRing(ring)));
+                    });
+                } else if (geometry.type === 'Polygon') {
+                    geometry.coordinates.forEach(ring => parts.push(processRing(ring)));
+                }
+                return parts.join(' ');
+            }
+
+            // 特殊省份视觉中心微调字典 [经度偏移, 纬度偏移]
+            const offsetMap = {
+                '河北省': [-0.8, -0.6],
+                '内蒙古自治区': [0, -1.8],
+                '甘肃省': [1.5, -0.8],
+                '陕西省': [0.2, -0.6],
+                '广东省': [0, 0.4],
+                '黑龙江省': [0, 0.2],
+                '澳门特别行政区': [0, 0],
+                '香港特别行政区': [0, 0]
+            };
+
+            let svg = `<svg class="china-map" viewBox="0 0 ${MAP_W} ${MAP_H}" xmlns="http://www.w3.org/2000/svg">`;
+            // 渐变定义
+            svg += `
+            <defs>
+                <linearGradient id="anhuiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#E63946;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#9B2226;stop-opacity:1" />
+                </linearGradient>
+            </defs>`;
+            let pathsHtml = '<g id="provinces">';
+            let labelsHtml = '<g id="labels">';
+            geoData.features.forEach((feature, index) => {
+                const name = feature.properties.name;
+                const d = geoToPath(feature.geometry);
+                const isAnhui = name === '安徽省';
+                const className = `map-province ${isAnhui ? 'anhui-highlight' : ''}`;
+                let fill = customColors[name] || warmPalette[index % warmPalette.length];
+                pathsHtml += `<path class="${className}" data-province="${name}" fill="${fill}" d="${d}" />`;
+                // 计算质心或中心点
+                let centerPoint = feature.properties.centroid || feature.properties.center;
+                if (centerPoint) {
+                    let [lng, lat] = centerPoint;
+                    // 应用微调
+                    if (offsetMap[name]) {
+                        lng += offsetMap[name][0];
+                        lat += offsetMap[name][1];
+                    }
+                    const [x, y] = project(lng, lat);
+                    const shortName = name.replace(/(省|市|维吾尔自治区|回族自治区|壮族自治区|自治区|特别行政区)/g, '');
+                    const labelClass = `map-label ${isAnhui ? 'anhui-label' : ''}`;
+                    labelsHtml += `<text id="label-${name}" class="${labelClass}" x="${x}" y="${y}">${shortName}</text>`;
+                }
+            });
+            pathsHtml += '</g>';
+            labelsHtml += '</g>';
+            svg += pathsHtml + labelsHtml + '</svg>';
+
+            // 塞回容器并保留 tooltip 节点
+            const tooltipHtml = container.querySelector('.map-tooltip').outerHTML;
+            container.innerHTML = svg + tooltipHtml;
+
+            bindEvents();
+        }
+
+        // 交互逻辑
+        function bindEvents() {
+            const tooltip = document.getElementById('mapTooltip');
+            const tooltipProvince = document.getElementById('tooltipProvince');
+            const tooltipCount = document.getElementById('tooltipCount');
+            const tooltipIcon = document.getElementById('tooltipIcon');
+            const mapContainer = document.getElementById('mapContainer');
+
+            document.querySelectorAll('.map-province').forEach(path => {
+                const provinceName = path.getAttribute('data-province');
+                const foodCount = getProvinceFoodCount(provinceName);
+                const labelElement = document.getElementById(`label-${provinceName}`);
+
+                path.addEventListener('mouseenter', function(e) {
+                    tooltipProvince.textContent = provinceName;
+                    tooltipCount.textContent = `收录美食：${foodCount} 道`;
+                    tooltipIcon.textContent = foodCount > 0 ? '🍱' : '📍';
+                    tooltip.classList.add('show');
+                    
+                    if(labelElement) labelElement.classList.add('hovered');
+                });
+
+                path.addEventListener('mousemove', function(e) {
+                    const rect = mapContainer.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    tooltip.style.left = x + 'px';
+                    tooltip.style.top = y + 'px';
+                });
+
+                path.addEventListener('mouseleave', function() {
+                    tooltip.classList.remove('show');
+                    if(labelElement) labelElement.classList.remove('hovered');
+                });
+
+                path.addEventListener('click', function() {
+                    const keyword = provinceName.replace(/(省|市|自治区)/g, '');
+                    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(keyword + ' 特色美食')}`, '_blank');
+                });
+            });
+        }
+
+        // 页面初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            if(document.getElementById('totalFoods')) {
+                document.getElementById('totalFoods').textContent = foodData.length;
+            }
+            initMap();
+        });
+
+        // 手机端菜单
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                const links = document.querySelector('.nav-links');
+                if(links) links.classList.toggle('mobile-open');
+            });
+        }
+
+        // 导航栏搜索功能
+        const navSearchToggle = document.getElementById('navSearchToggle');
+        const navSearchBox = document.getElementById('navSearchBox');
+        const navSearchInput = document.getElementById('navSearchInput');
+        const navSearchSubmit = document.getElementById('navSearchSubmit');
+
+        if (navSearchToggle && navSearchBox && navSearchInput && navSearchSubmit) {
+            navSearchToggle.addEventListener('click', () => {
+                navSearchBox.classList.toggle('active');
+                if (navSearchBox.classList.contains('active')) {
+                    navSearchInput.focus();
+                }
+            });
+
+            function performNavSearch() {
+                const keyword = navSearchInput.value.trim();
+                if (keyword) {
+                    const searchUrl = `https://www.baidu.com/s?wd=${encodeURIComponent(keyword + ' 美食')}`;
+                    window.open(searchUrl, '_blank');
+                    navSearchInput.value = '';
+                }
+            }
+
+            navSearchSubmit.addEventListener('click', performNavSearch);
+            navSearchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performNavSearch();
+                }
+            });
+
+            // 点击外部关闭搜索框
+            document.addEventListener('click', (e) => {
+                if (!navSearchToggle.contains(e.target) && !navSearchBox.contains(e.target)) {
+                    navSearchBox.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

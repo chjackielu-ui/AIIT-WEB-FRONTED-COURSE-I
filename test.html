@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>usemap 图像映射演示</title>
+    <style>
+        body {
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            background-color: #f5f6fa;
+            padding: 30px;
+        }
+
+        .box {
+            width: 700px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 25px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #333;
+        }
+
+        #msg {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #eef6ff;
+            border-left: 5px solid #2d8cf0;
+            font-size: 18px;
+        }
+
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>usemap 图像映射演示</h2>
+
+        <p>
+            下面这张图片使用了 <code>usemap</code> 属性，不同区域可以点击。
+        </p>
+
+        <img id="myImg" usemap="#testmap" width="600" height="300" alt="图像映射演示">
+
+        <map name="testmap">
+            <area 
+                shape="rect" 
+                coords="20,50,180,230" 
+                href="javascript:void(0)" 
+                alt="矩形区域"
+                title="点击矩形区域"
+                onclick="showMsg('你点击了矩形区域：shape=rect，coords=20,50,180,230')">
+
+            <area 
+                shape="circle" 
+                coords="300,140,80" 
+                href="javascript:void(0)" 
+                alt="圆形区域"
+                title="点击圆形区域"
+                onclick="showMsg('你点击了圆形区域：shape=circle，coords=300,140,80')">
+
+            <area 
+                shape="poly" 
+                coords="430,60,560,150,470,240" 
+                href="javascript:void(0)" 
+                alt="多边形区域"
+                title="点击三角形区域"
+                onclick="showMsg('你点击了多边形区域：shape=poly，coords=430,60,560,150,470,240')">
+        </map>
+
+        <div id="msg">
+            请点击图片中的矩形、圆形或三角形区域。
+        </div>
+    </div>
+
+    <script>
+        var svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="600" height="300">
+            <rect x="0" y="0" width="600" height="300" fill="#fff7e6"/>
+
+            <rect x="20" y="50" width="160" height="180" fill="#ff7875" stroke="#333" stroke-width="3"/>
+            <text x="70" y="145" font-size="24" fill="#000">矩形</text>
+
+            <circle cx="300" cy="140" r="80" fill="#69c0ff" stroke="#333" stroke-width="3"/>
+            <text x="275" y="150" font-size="24" fill="#000">圆形</text>
+
+            <polygon points="430,60 560,150 470,240" fill="#95de64" stroke="#333" stroke-width="3"/>
+            <text x="470" y="155" font-size="24" fill="#000">三角形</text>
+        </svg>
+        `;
+
+        document.getElementById("myImg").src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+
+        function showMsg(text) {
+            document.getElementById("msg").innerHTML = text;
+        }
+    </script>
+
+</body>
+</html>

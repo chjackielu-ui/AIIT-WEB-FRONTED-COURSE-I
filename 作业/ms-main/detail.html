@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美食详情 — 舌尖BOSS</title>
+    <link rel="stylesheet" href="common.css?v=2.1">
+    <style>
+        .detail-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            transition: color var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+        }
+
+        .detail-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, #FFF5F5 0%, #FFF9F0 100%);
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .detail-img {
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-lg);
+            margin: 0 auto 32px;
+            display: block;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .detail-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .detail-location {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .detail-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .detail-body {
+            padding: 40px;
+        }
+
+        .detail-section {
+            margin-bottom: 32px;
+        }
+
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .detail-item {
+            background-color: var(--bg-secondary);
+            padding: 16px;
+            border-radius: var(--radius-md);
+        }
+
+        .detail-item-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .detail-item-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .detail-desc {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        /* 响应式 */
+        @media (max-width: 640px) {
+            .detail-header {
+                padding: 40px 24px;
+            }
+
+            .detail-name {
+                font-size: 2rem;
+            }
+
+            .detail-img {
+                height: 280px;
+            }
+
+            .detail-body {
+                padding: 24px;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <header class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo.png" alt="舌尖BOSS" class="logo-icon">
+                <span>舌尖BOSS</span>
+            </a>
+            <div class="nav-center">
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">首页</a>
+                    <a href="map.html" class="nav-link">美食地图</a>
+                    <a href="list.html" class="nav-link">美食图鉴</a>
+                    <a href="challenge.html" class="nav-link">挑战BOSS</a>
+                </nav>
+            </div>
+            <div class="nav-search-container">
+                <button class="nav-search-toggle" id="navSearchToggle" title="搜索">🔍</button>
+                <div class="nav-search-box" id="navSearchBox">
+                    <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜索美食...">
+                    <button class="nav-search-submit" id="navSearchSubmit">→</button>
+                </div>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </header>
+
+    <!-- 详情内容 -->
+    <div class="detail-container">
+        <a href="javascript:history.back()" class="back-link">
+            ← 返回上一页
+        </a>
+
+        <div class="detail-card" id="detailCard">
+            <!-- 动态生成 -->
+        </div>
+
+        <div class="detail-actions">
+            <a href="list.html" class="btn btn-outline">浏览更多美食</a>
+            <a href="map.html" class="btn btn-primary">查看美食地图</a>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-brand">
+                <span class="logo-icon">🍜</span>
+                <span>舌尖BOSS</span>
+            </div>
+            <p class="footer-desc">全国美食探索图鉴</p>
+            <p class="footer-tech">Copyright By 卢酉杰 软件2403 3243012342</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script>
+        // 从URL获取美食ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const foodId = parseInt(urlParams.get('id'));
+
+        // 查找美食数据
+        const food = foodBosses.find(f => f.id === foodId);
+
+        if (!food) {
+            document.getElementById('detailCard').innerHTML = `
+                <div class="detail-header">
+                    <h1 class="detail-name">未找到该美食</h1>
+                    <p class="detail-location">请返回重新选择</p>
+                </div>
+            `;
+        } else {
+            // 渲染详情
+            const tags = food.taste.map(t => `<span class="tag tag-primary">${t}</span>`).join('');
+
+            // 图片HTML（优先显示图片，不显示Emoji）
+            let imgHtml = '';
+            if (food.img) {
+                imgHtml = `<img class="detail-img" src="${food.img}" alt="${food.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x500/F3F4F6/9CA3AF?text=${encodeURIComponent(food.name)}';">`;
+            }
+
+            document.getElementById('detailCard').innerHTML = `
+                <div class="detail-header">
+                    ${imgHtml}
+                    <h1 class="detail-name">${food.name}</h1>
+                    <p class="detail-location">${food.city} · ${food.province || food.region}</p>
+                    <div class="detail-tags">${tags}</div>
+                </div>
+                <div class="detail-body">
+                    <div class="detail-section">
+                        <h2 class="detail-section-title">基本信息</h2>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-item-label">所属省份</div>
+                                <div class="detail-item-value">${food.province || '未知'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">代表城市</div>
+                                <div class="detail-item-value">${food.city}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">美食等级</div>
+                                <div class="detail-item-value" style="color: ${food.color};">${food.level}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-item-label">口味类型</div>
+                                <div class="detail-item-value">${food.type}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h2 class="detail-section-title">美食简介</h2>
+                        <p class="detail-desc">${food.desc}</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h2 class="detail-section-title">详细介绍</h2>
+                        <p class="detail-desc">${food.detail}</p>
+                    </div>
+                </div>
+            `;
+
+            // 更新页面标题
+            document.title = `${food.name} — 舌尖BOSS`;
+        }
+
+        // 手机菜单
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('mobile-open');
+        });
+
+        // 导航栏搜索功能
+        const navSearchToggle = document.getElementById('navSearchToggle');
+        const navSearchBox = document.getElementById('navSearchBox');
+        const navSearchInput = document.getElementById('navSearchInput');
+        const navSearchSubmit = document.getElementById('navSearchSubmit');
+
+        navSearchToggle.addEventListener('click', () => {
+            navSearchBox.classList.toggle('active');
+            if (navSearchBox.classList.contains('active')) {
+                navSearchInput.focus();
+            }
+        });
+
+        function performNavSearch() {
+            const keyword = navSearchInput.value.trim();
+            if (keyword) {
+                const searchUrl = `https://www.baidu.com/s?wd=${encodeURIComponent(keyword + ' 美食')}`;
+                window.open(searchUrl, '_blank');
+                navSearchInput.value = '';
+            }
+        }
+
+        navSearchSubmit.addEventListener('click', performNavSearch);
+        navSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performNavSearch();
+            }
+        });
+
+        // 点击外部关闭搜索框
+        document.addEventListener('click', (e) => {
+            if (!navSearchToggle.contains(e.target) && !navSearchBox.contains(e.target)) {
+                navSearchBox.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

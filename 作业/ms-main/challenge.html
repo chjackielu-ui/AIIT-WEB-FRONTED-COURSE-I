@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>挑战BOSS — 舌尖BOSS</title>
+    <link rel="stylesheet" href="common.css?v=2.1">
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 100%);
+            padding: 60px 0 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* 今日BOSS卡片 */
+        .today-boss-section {
+            padding: 40px 0;
+            background-color: #FAFBFC;
+        }
+
+        .today-boss-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #FFF 0%, #FFF9F0 100%);
+            border: 2px solid #FFA500;
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(255, 165, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .today-boss-card::before {
+            content: "⚔️";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 8rem;
+            opacity: 0.05;
+        }
+
+        .boss-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .boss-img {
+            width: 100%;
+            max-width: 400px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: var(--shadow-md);
+        }
+
+        .boss-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .boss-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .boss-info-item {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .boss-tags {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .challenge-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFA500, #FF8C00) !important;
+            color: white !important;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .challenge-btn:hover {
+            background: linear-gradient(135deg, #FF8C00, #FF7700) !important;
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 165, 0, 0.3);
+        }
+
+        .challenge-btn:disabled {
+            background: #9CA3AF;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .challenged-badge {
+            text-align: center;
+            color: #10B981;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        /* 智能挑战区 */
+        .smart-challenge-section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 40px;
+        }
+
+        .challenge-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 32px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 16px 12px;
+            background-color: white;
+            border: 2px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: center;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.active {
+            background-color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .option-emoji {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .option-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .recommend-btn {
+            width: 100%;
+            max-width: 400px;
+            margin: 32px auto 0;
+            display: block;
+            padding: 18px;
+            background: #E63946 !important;
+            background: var(--accent-primary) !important;
+            color: white !important;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .recommend-btn:hover {
+            background-color: #D90429 !important;
+            background-color: var(--primary-red-hover) !important;
+            background: #D90429 !important;
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(230, 57, 70, 0.3);
+        }
+
+        /* 推荐结果 */
+        .result-section {
+            display: none;
+            padding: 40px 0;
+            background-color: #FAFBFC;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .match-score {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .match-score-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+        }
+
+        .match-stars {
+            font-size: 1.5rem;
+            margin: 8px 0;
+        }
+
+        .match-level {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .match-reasons {
+            margin: 24px 0;
+            padding: 20px;
+            background-color: #F0F9FF;
+            border-radius: var(--radius-md);
+        }
+
+        .match-reasons-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .match-reasons-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .match-reasons-item {
+            padding: 6px 0;
+            color: var(--text-secondary);
+        }
+
+        .match-reasons-item::before {
+            content: "✓";
+            color: #10B981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .result-actions button {
+            flex: 1;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .btn-accept {
+            background-color: #E63946 !important;
+            background-color: var(--accent-primary) !important;
+            background: #E63946 !important;
+            color: white !important;
+            border: none;
+        }
+
+        .btn-accept:hover {
+            background-color: #D90429 !important;
+            background-color: var(--primary-red-hover) !important;
+            background: #D90429 !important;
+            color: white !important;
+        }
+
+        .btn-retry {
+            background-color: white;
+            color: var(--text-primary);
+            border: 2px solid var(--border-medium);
+        }
+
+        .btn-retry:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        /* 挑战统计 */
+        .stats-section {
+            padding: 60px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto 40px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* 成就徽章 */
+        .achievements {
+            max-width: 1000px;
+            margin: 40px auto 0;
+        }
+
+        .achievements-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .achievement-card {
+            background-color: white;
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            transition: all var(--transition);
+        }
+
+        .achievement-card.unlocked {
+            border-color: #FFA500;
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 100%);
+        }
+
+        .achievement-card.locked {
+            opacity: 0.4;
+            filter: grayscale(1);
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+
+        .achievement-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .achievement-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .boss-name {
+                font-size: 1.5rem;
+            }
+
+            .options-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <header class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo.png" alt="舌尖BOSS" class="logo-icon">
+                <span>舌尖BOSS</span>
+            </a>
+            <div class="nav-center">
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">首页</a>
+                    <a href="map.html" class="nav-link">美食地图</a>
+                    <a href="list.html" class="nav-link">美食图鉴</a>
+                    <a href="challenge.html" class="nav-link active">挑战BOSS</a>
+                </nav>
+            </div>
+            <div class="nav-search-container">
+                <button class="nav-search-toggle" id="navSearchToggle" title="搜索">🔍</button>
+                <div class="nav-search-box" id="navSearchBox">
+                    <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜索美食...">
+                    <button class="nav-search-submit" id="navSearchSubmit">→</button>
+                </div>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </header>
+
+    <!-- 页面头部 -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">🎯 挑战美食BOSS</h1>
+            <p class="page-subtitle">根据心情、场景智能推荐，开启你的美食冒险</p>
+        </div>
+    </section>
+
+    <!-- 今日BOSS -->
+    <section class="today-boss-section">
+        <div class="container">
+            <div class="today-boss-card" id="todayBossCard">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 智能挑战 -->
+    <section class="smart-challenge-section">
+        <div class="container">
+            <h2 class="section-title">🤖 智能推荐</h2>
+            <div class="challenge-form">
+                <div class="form-group">
+                    <label class="form-label">😊 今天心情如何？</label>
+                    <div class="options-grid" id="moodOptions">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🌤️ 现在天气怎样？</label>
+                    <div class="options-grid" id="weatherOptions">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🏠 准备在什么场合用餐？</label>
+                    <div class="options-grid" id="sceneOptions">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🌶️ 想吃什么口味？</label>
+                    <div class="options-grid" id="tasteOptions">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <button class="recommend-btn" id="recommendBtn">为我推荐</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 推荐结果 -->
+    <section class="result-section" id="resultSection">
+        <div class="container">
+            <div class="result-card" id="resultCard">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 挑战统计 -->
+    <section class="stats-section">
+        <div class="container">
+            <h2 class="section-title">📊 我的挑战记录</h2>
+            <div class="stats-grid" id="statsGrid">
+                <!-- 动态生成 -->
+            </div>
+
+            <div class="achievements">
+                <h3 class="achievements-title">🏆 成就徽章</h3>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-brand">
+                <span class="logo-icon">🍜</span>
+                <span>舌尖BOSS</span>
+            </div>
+            <p class="footer-desc">全国美食探索图鉴</p>
+            <p class="footer-tech">Copyright By 卢酉杰 软件2403 3243012342</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="challenge-core.js"></script>
+    <script src="challenge.js"></script>
+</body>
+</html>
